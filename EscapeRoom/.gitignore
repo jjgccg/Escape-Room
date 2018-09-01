@@ -16,3 +16,4 @@
 *.suo
 *.VC.opendb
 *.sln
+*.ipch
