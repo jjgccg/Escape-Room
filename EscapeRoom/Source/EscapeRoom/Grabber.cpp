@@ -4,6 +4,7 @@
 #include "GameFramework/PlayerController.h"
 #include "Engine/World.h"
 #include "GameFramework/Actor.h"
+#include "Runtime/Engine/Public/DrawDebugHelpers.h"
 
 #define OUT
 
@@ -37,12 +38,26 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 	FVector PlayerViewPointLocation;
 	FRotator PlayerViewPointRotation;
 	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(OUT PlayerViewPointLocation, OUT PlayerViewPointRotation);
-	UE_LOG(LogTemp, Warning, TEXT("Location: %s, Position: %s"), 
-									*PlayerViewPointLocation.ToString(), 
-									*PlayerViewPointRotation.ToString());
 
-	// Ray-cast out to reach distance
+	FVector LineTraceEnd = PlayerViewPointLocation + (PlayerViewPointRotation.Vector() * Reach); 
+	DrawDebugLine(GetWorld(), PlayerViewPointLocation, LineTraceEnd, FColor(255, 0, 0), false, 0.0f, 0.0f, 50.0f);
+
+	// Setup query parameters
+	FCollisionQueryParams TraceParameters(FName(TEXT("")), false, GetOwner());
+
+	// Line trace (Ray Cast)
+	FHitResult Hit;
+	GetWorld()->LineTraceSingleByObjectType(OUT Hit, 
+											PlayerViewPointLocation, 
+											LineTraceEnd, 
+											FCollisionObjectQueryParams(ECollisionChannel::ECC_PhysicsBody),
+											TraceParameters);
 
 	// See what we hit
+	AActor* ActorHit = Hit.GetActor();
+	if (ActorHit)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Line trace hit: %s"), *(ActorHit->GetName()))                      ;
+	}
 }
 
