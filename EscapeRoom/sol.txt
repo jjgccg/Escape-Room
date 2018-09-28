@@ -1,0 +1,23 @@
+char first_non_repeating(string str)
+{   
+    map<char, int> hmp;  map<char, int>::iterator it;
+    int i, length= str.length();
+    char c;
+    if (str.empty())
+        return '0';
+    for (i = 0; i < length; i++) {
+        c = str.at(i);
+        it = hmp.find(c);
+        if (it != hmp.end())
+            it->second += 1;
+        else
+            hmp.insert(pair<char,int>(c, 1));
+    }
+    for (i = 0; i < length; i++) { // Search character hashtable in order of string str
+        c = str.at(i);
+        it = hmp.find(c);
+        if (it->second == 1)
+            return c;
+    }
+    return '0';
+}
