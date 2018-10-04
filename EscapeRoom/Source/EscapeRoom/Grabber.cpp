@@ -59,15 +59,16 @@ void UGrabber::Grab()
 	auto ComponentToGrab = HitResult.GetComponent(); // component we want is in the hit result
 	auto ActorHit = HitResult.GetActor(); //actor of component
 
-	if (ActorHit != nullptr) //if we actually hit something, attach physics handle
+	if (ActorHit) //if we actually hit something, attach physics handle
 	{
+		if (!PhysicsHandle) return; //check for nullptr
 		PhysicsHandle->GrabComponent(ComponentToGrab, NAME_None, ComponentToGrab->GetOwner()->GetActorLocation(), true);
 	}
 }
 
 void UGrabber::Release()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Released pressed"));
+	if (!PhysicsHandle) return; //check for nullptr
 	PhysicsHandle->ReleaseComponent();
 }
 
@@ -75,6 +76,8 @@ void UGrabber::Release()
 void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	if (!PhysicsHandle) return; //check for nullptr
 
 	if (PhysicsHandle->GetGrabbedComponent())
 	{
